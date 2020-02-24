@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
+            "args": [],
+        }
+        /*
+        {
+            "type": "gdb",
+            "request": "launch",
+            "name": "Launch Program",
+            "target": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "parseText"
+        }
+        */
+        /*
+        ,
+        {
+            "name": "(lldb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        }
+        */
+    ]
+}

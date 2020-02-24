@@ -1,0 +1,29 @@
+[package]
+name = "nninterpolation"
+version = "0.1.0"
+
+[[bin]]
+name = "nninterpolation"
+
+[dependencies]
+cgmath = "*"
+nalgebra = "*"
+noise = "*"
+kiss3d = "*"
+rand = "*"
+spade = "1.8.1"
+
+# Options for `cargo build`
+[profile.dev]
+panic         = "abort"     # Disable stack unwinding on panic
+codegen-units = 1           # Better optimizations
+lto           = true        # Optimize linker by removing dead code
+#opt-level = 3
+
+# Options for `cargo build --release`
+[profile.release]
+debug         = true        # Symbols are nice and they don't increase the size on Flash
+panic         = "abort"     # Disable stack unwinding on panic
+codegen-units = 1           # Better optimizations
+lto           = true        # Optimize linker by removing dead code
+opt-level     = 'z'         # Optimize for size
