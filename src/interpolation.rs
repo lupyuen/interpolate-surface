@@ -133,10 +133,6 @@ impl<I: InterpolationMethod> Grid<I> {
             for y in 0..=GRID_SUBDIVISIONS {
                 let val = self.grid[x][y] + OFFSET;
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
-                /*
-                if pos.x < X_MIN || pos.x > X_MAX ||
-                    pos.y < Y_MIN || pos.y > Y_MAX { continue; } ////
-                */
                 vertices.push(na::Point3::new(pos.x as f32, pos.y as f32, val as f32));
             }
         }
@@ -162,11 +158,7 @@ impl<I: InterpolationMethod> Grid<I> {
             for y in 0..=GRID_SUBDIVISIONS {
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
-                println!("XVirtual={},YVirtual={},XPhysical={}", pos.x, pos.y, value);
-                /*
-                if pos.x < X_MIN || pos.x > X_MAX ||
-                    pos.y < Y_MIN || pos.y > Y_MAX { continue; } ////
-                */
+                println!("XPhysical={:.0},YPhysical={:.0},XVirtual={:.0}", pos.x, pos.y, value);
                 values[x][y] = value;
             }
         }

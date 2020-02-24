@@ -64,6 +64,7 @@ pub fn cg_vec_to_na(vec: cg::Vector3<f64>) -> na::Point3<f32> {
 
 impl InterpolationRenderData {
     fn new<I: InterpolationMethod>(delaunay: &Delaunay) -> InterpolationRenderData {
+        println!("{}", I::title());
         let grid = Grid::<I>::from_delaunay_interpolation(delaunay);
         let (vertices, indices) = grid.get_triangles();
         let mesh = Mesh::new(vertices, indices, None, None, false);
