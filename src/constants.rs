@@ -8,12 +8,14 @@
 
 use cgmath::Vector2;
 
-pub const X_MIN: f64 = 0.0; // 3.5;
-pub const X_MAX: f64 = 32.0; // 3.5;
-pub const Y_MIN: f64 = 0.0; // 3.5;
-pub const Y_MAX: f64 = 16.0; // 3.5;
-//pub const SAMPLE_REGION: f64 = X_MAX - X_MIN; ////
-//pub const SAMPLE_REGION: f64 = 32.0; // 3.5;
+pub const X_MIN: f64 = 0.0;
+pub const X_MAX: f64 = 32.0;
+pub const Y_MIN: f64 = 0.0;
+pub const Y_MAX: f64 = 16.0;
+pub const X_INCREMENT: f64 = 1.0;
+pub const Y_INCREMENT: f64 = 1.0;
+
+//pub const SAMPLE_REGION: f64 = 3.5;
 //pub const FREQUENCY: f64 = 1.;
 //pub const NUM_POINTS: usize = 120;
 //pub const MAX_HEIGHT: f64 = 1.5;
