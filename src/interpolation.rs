@@ -162,6 +162,7 @@ impl<I: InterpolationMethod> Grid<I> {
             for y in 0..=GRID_SUBDIVISIONS {
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
+                println!("XVirtual={},YVirtual={},XPhysical={}", pos.x, pos.y, value);
                 /*
                 if pos.x < X_MIN || pos.x > X_MAX ||
                     pos.y < Y_MIN || pos.y > Y_MAX { continue; } ////

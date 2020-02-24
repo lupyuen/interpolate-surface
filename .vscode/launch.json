@@ -8,33 +8,8 @@
             "name": "Launch",
             "type": "lldb",
             "request": "launch",
-            "program": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
+            "program": "target/debug/nninterpolation",
             "args": [],
         }
-        /*
-        {
-            "type": "gdb",
-            "request": "launch",
-            "name": "Launch Program",
-            "target": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
-            "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText"
-        }
-        */
-        /*
-        ,
-        {
-            "name": "(lldb) Launch",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "/Users/Luppy/PineTime/nninterpolation/target/debug/nninterpolation",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
-        }
-        */
     ]
 }
