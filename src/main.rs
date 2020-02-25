@@ -256,7 +256,7 @@ fn generate_physical_to_virtual_map() {
                 data::X_VIRTUAL_GRID[y][x] as f64, 
                 data::Y_VIRTUAL_GRID[y][x] as f64
             );
-            print!("[{:.0},{:.0}],", virtual_point.x, virtual_point.y);
+            print!("({:.0},{:.0}),", virtual_point.x, virtual_point.y);
         }
         println!("],");
     }
@@ -279,7 +279,7 @@ fn generate_virtual_to_physical_map() {
                 pos.x,
                 pos.y);  //  Returns (left, top, right, bottom) for the Bounding Box
             if let Some((left, top, right, bottom)) = bounding_box {
-                print!("[{:.0},{:.0},{:.0},{:.0}],", left, top, right, bottom);
+                print!("({:.0},{:.0},{:.0},{:.0}),", left, top, right, bottom);
                 /* if left as u8 == right as u8 && top as u8 == bottom as u8 {
                     print!("****");  //  Flag out Virtual Points that map to a single Physical Point
                 } */
