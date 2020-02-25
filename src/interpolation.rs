@@ -175,15 +175,15 @@ impl<I: InterpolationMethod> Grid<I> {
         #[cfg(feature = "interpolate_y")]  //  If interpolating Y values...
         println!("Y_VIRTUAL_GRID=\n");
 
-        print!("[ ");
+        print!("[");
         for row in values.iter() {
-            print!("[ ");
+            print!("[");
             for val in row.iter() {
-                print!("{:.1}, ", val);
+                print!("{:.1},", val);
             }
-            print!("]");
+            print!("],");
         }
-        println!("]");
+        println!("]\n");
 
         Grid {
             grid: values,
