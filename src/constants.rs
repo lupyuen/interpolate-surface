@@ -8,25 +8,35 @@
 
 use cgmath::Vector2;
 
-/// Range of Physical (x,y) coordinates
+/// Range of Physical (x,y) coordinates, based on PineTime screen resolution
 pub const X_PHYSICAL_MIN: f64 = 0.0;
 pub const X_PHYSICAL_MAX: f64 = 120.0;
 pub const Y_PHYSICAL_MIN: f64 = 0.0;
 pub const Y_PHYSICAL_MAX: f64 = 100.0;
 
-/// Virtual (x,y) coordinates shall be computed at these increments
+/// Range of Virtual (x,y) coordinates, based on CHIP-8 Emulator resolution
+pub const X_VIRTUAL_MIN: f64 = 0.0;
+pub const X_VIRTUAL_MAX: f64 = 32.0;
+pub const Y_VIRTUAL_MIN: f64 = 0.0;
+pub const Y_VIRTUAL_MAX: f64 = 16.0;
+
+/// Virtual (x,y) coordinates shall be interpolated for Physical (x,y) coordinates at these increments
 pub const X_PHYSICAL_INCREMENT: f64 = 4.0; // 1.0;  //  i.e. 0, 1, 2, ...
 pub const Y_PHYSICAL_INCREMENT: f64 = 4.0; // 1.0;  //  i.e. 0, 1, 2, ...
 
-/// How many divisions in the X and Y axis to be computed
-pub const X_GRID_SUBDIVISIONS: usize = ((X_PHYSICAL_MAX - X_PHYSICAL_MIN) / X_PHYSICAL_INCREMENT) as usize;
-pub const Y_GRID_SUBDIVISIONS: usize = ((Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) / Y_PHYSICAL_INCREMENT) as usize;
+/// Bounding Box for Physical (x,y) coordinates shall be computed for Virtual (x,y) coordinates at these increments
+pub const X_VIRTUAL_INCREMENT: f64 = 1.0;  //  i.e. 0, 1, 2, ...
+pub const Y_VIRTUAL_INCREMENT: f64 = 1.0;  //  i.e. 0, 1, 2, ...
+
+/// How many divisions in the Physical X and Y axes to be interpolated
+pub const X_PHYSICAL_SUBDIVISIONS: usize = ((X_PHYSICAL_MAX - X_PHYSICAL_MIN) / X_PHYSICAL_INCREMENT) as usize;
+pub const Y_PHYSICAL_SUBDIVISIONS: usize = ((Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) / Y_PHYSICAL_INCREMENT) as usize;
 
 pub const OFFSET: f64 = 0.0;  //  Previously -0.01
 pub const GRID_WIDTH: f64 = (X_PHYSICAL_MAX - X_PHYSICAL_MIN) * 1.05;
 pub const GRID_HEIGHT: f64 = (Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) * 1.05;
-pub const X_SCALE: f64 = 1.0 * GRID_WIDTH / (X_GRID_SUBDIVISIONS as f64);
-pub const Y_SCALE: f64 = 1.0 * GRID_HEIGHT / (Y_GRID_SUBDIVISIONS as f64);
+pub const X_SCALE: f64 = 1.0 * GRID_WIDTH / (X_PHYSICAL_SUBDIVISIONS as f64);
+pub const Y_SCALE: f64 = 1.0 * GRID_HEIGHT / (Y_PHYSICAL_SUBDIVISIONS as f64);
 pub const GRID_OFFSET: Vector2<f64> = Vector2 {
     x: X_PHYSICAL_MIN,  //  Previously GRID_SIZE
     y: Y_PHYSICAL_MIN,  //  Previously GRID_SIZE

@@ -96,7 +96,7 @@ pub mod interpolation_methods {
  * convert these into an edge list or a vertices / indices list
  */
 pub struct Grid<I: InterpolationMethod> {
-    grid: [[f64; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1],
+    grid: [[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1],
     __interpolation: ::std::marker::PhantomData<I>,
 }
 
@@ -104,8 +104,8 @@ impl<I: InterpolationMethod> Grid<I> {
     // Returns a list of edges for rendering
     pub fn get_edges(&self) -> Vec<(na::Point3<f32>, na::Point3<f32>)> {
         let mut result = Vec::new();
-        for y in 0..Y_GRID_SUBDIVISIONS {
-            for x in 0..X_GRID_SUBDIVISIONS {
+        for y in 0..Y_PHYSICAL_SUBDIVISIONS {
+            for x in 0..X_PHYSICAL_SUBDIVISIONS {
                 let from_val = self.grid[y][x] + OFFSET;
                 let from_pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let from = PointWithHeight::new(from_pos, from_val);
@@ -129,16 +129,16 @@ impl<I: InterpolationMethod> Grid<I> {
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
 
-        for y in 0..=Y_GRID_SUBDIVISIONS {
-            for x in 0..=X_GRID_SUBDIVISIONS {
+        for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
+            for x in 0..=X_PHYSICAL_SUBDIVISIONS {
                 let val = self.grid[y][x] + OFFSET;
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 vertices.push(na::Point3::new(pos.x as f32, pos.y as f32, val as f32));
             }
         }
-        for y in 0..Y_GRID_SUBDIVISIONS {
-            for x in 0..X_GRID_SUBDIVISIONS {
-                let index = |x, y| y * (X_GRID_SUBDIVISIONS + 1) + x;
+        for y in 0..Y_PHYSICAL_SUBDIVISIONS {
+            for x in 0..X_PHYSICAL_SUBDIVISIONS {
+                let index = |x, y| y * (X_PHYSICAL_SUBDIVISIONS + 1) + x;
                 let v00 = index(x, y) as u16;
                 let v10 = index(x + 1, y) as u16;
                 let v01 = index(x, y + 1) as u16;
@@ -153,9 +153,9 @@ impl<I: InterpolationMethod> Grid<I> {
     // This will do the actual interpolation and store it in the triangulation
     #[allow(clippy::needless_range_loop)]
     pub fn from_delaunay_interpolation(delaunay: &Delaunay) -> Grid<I> {
-        let mut values = [[0.0; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1];
-        for y in 0..=Y_GRID_SUBDIVISIONS {
-            for x in 0..=X_GRID_SUBDIVISIONS {
+        let mut values = [[0.0; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1];
+        for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
+            for x in 0..=X_PHYSICAL_SUBDIVISIONS {
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
                 println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
@@ -163,6 +163,8 @@ impl<I: InterpolationMethod> Grid<I> {
             }
         }
         //  For all Virtual (x,y) Coordinates, find the min and max of Physical x or y Coordinates
+
+
         let physical_range = Self::get_physical_range(&values, Some(10.0), None);  //  Returns (min,max) for the range
         println!("range:{:?}", physical_range);
         Grid {
@@ -184,15 +186,15 @@ impl<I: InterpolationMethod> Grid<I> {
     /// The Virtual x or y Coordinate is truncated to integer for comparison.
     /// `None` means disregard the Virtual x or y Coordinate. Function returns `None` if Virtual x or y Coordinate was not found.
     fn get_physical_range(
-        interpolated_values: &[[f64; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1],
+        interpolated_values: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1],
         x_virtual: Option<f64>,
         y_virtual: Option<f64>
     ) -> Option<(f64, f64)> {
         let mut min: f64 = f64::MAX;
         let mut max: f64 = f64::MIN;
         //  Search for the Virtual x or y Coordinate
-        for y in 0..=Y_GRID_SUBDIVISIONS {
-            for x in 0..=X_GRID_SUBDIVISIONS {
+        for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
+            for x in 0..=X_PHYSICAL_SUBDIVISIONS {
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let value = interpolated_values[y][x].floor();
 
