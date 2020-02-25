@@ -158,11 +158,22 @@ impl<I: InterpolationMethod> Grid<I> {
             for x in 0..=X_PHYSICAL_SUBDIVISIONS {
                 let pos = super::transform_physical_point(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
-                println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
                 values[y][x] = value.floor();
+
+                #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
+                println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
+
+                #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
+                println!("XPhysical={:.0}, YPhysical={:.0}, YVirtual={:.0}", pos.x, pos.y, value);
             }
         }
-        println!("grid=\n{:?}", values);
+
+        #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
+        println!("X_VIRTUAL_GRID=\n{:?}", values);
+        
+        #[cfg(feature = "interpolate_y")]  //  If interpolating Y values...
+        println!("Y_VIRTUAL_GRID=\n{:?}", values);
+
         Grid {
             grid: values,
             __interpolation: Default::default(),
