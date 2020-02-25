@@ -152,6 +152,10 @@ fn main() {
 
     let normals = get_normals(&delaunay);
 
+    //  Generate the map of Physical Pixels to Virtual Pixels. Used by the CHIP-8 Emulator to decide which Physical Pixels to redraw when a Virtual Pixel is updated.
+    generate_physical_to_virtual_map();
+
+    //  Generate the map of Virtual Pixels to Physical Pixels. Used by the CHIP-8 Emulator to decide which Physical Pixels to redraw when a Virtual Pixel is updated.
     generate_virtual_to_physical_map();
 
     while window.render() {
@@ -237,8 +241,25 @@ fn main() {
     }
 }
 
+/// For all Physical (x,y) Coordinates, return the corresponding Virtual (x,y) Coordinates.
+/// Used by the CHIP-8 Emulator to decide which Virtual Pixel to fetch the colour value when rendering a Physical Pixel.
+fn generate_physical_to_virtual_map() {
+    for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
+        for x in 0..=X_PHYSICAL_SUBDIVISIONS {
+            //  Convert the normalised (x,y) into Physical (x,y) Coordinates
+            let physical_point = transform_physical_point(cg::Point2::new(x as f64, y as f64));
+            //  Construct the interpolated Virtual (x,y) Coordinates
+            let virtual_point = cg::Point2::new(
+                data::X_VIRTUAL_GRID[y][x] as f64, 
+                data::Y_VIRTUAL_GRID[y][x] as f64
+            );
+        }
+    }
+}
+
+/// For all Virtual (x,y) Coordinates, compute the Bounding Box that encloses the corresponding Physical (x,y) Coordinates.
+/// Used by the CHIP-8 Emulator to decide which Physical Pixels to redraw when a Virtual Pixel is updated.
 fn generate_virtual_to_physical_map() {
-    //  For all Virtual (x,y) Coordinates, compute the Bounding Box: min and max of Physical x or y Coordinates
     for y in 0..=Y_VIRTUAL_SUBDIVISIONS {
         for x in 0..=X_VIRTUAL_SUBDIVISIONS {
             //  Convert the normalised (x,y) into Virtual (x,y) Coordinates
