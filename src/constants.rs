@@ -6,6 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! Constants for interpolating CHIP-8's Emulator Screen to PineTime Display.
+//! Since the X and Y axes are symmetric, we only compute one quadrant here (X >= 0, Y >= 0)
 use cgmath::Vector2;
 
 /// Range of Physical (x,y) coordinates, based on PineTime screen resolution
@@ -32,15 +34,39 @@ pub const Y_VIRTUAL_INCREMENT: f64 = 1.0;  //  i.e. 0, 1, 2, ...
 pub const X_PHYSICAL_SUBDIVISIONS: usize = ((X_PHYSICAL_MAX - X_PHYSICAL_MIN) / X_PHYSICAL_INCREMENT) as usize;
 pub const Y_PHYSICAL_SUBDIVISIONS: usize = ((Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) / Y_PHYSICAL_INCREMENT) as usize;
 
-pub const OFFSET: f64 = 0.0;  //  Previously -0.01
-pub const GRID_WIDTH: f64 = (X_PHYSICAL_MAX - X_PHYSICAL_MIN) * 1.05;
-pub const GRID_HEIGHT: f64 = (Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) * 1.05;
-pub const X_SCALE: f64 = 1.0 * GRID_WIDTH / (X_PHYSICAL_SUBDIVISIONS as f64);
-pub const Y_SCALE: f64 = 1.0 * GRID_HEIGHT / (Y_PHYSICAL_SUBDIVISIONS as f64);
-pub const GRID_OFFSET: Vector2<f64> = Vector2 {
+/// How many divisions in the Virtual X and Y axes to be computed for Bounding Box
+pub const X_VIRTUAL_SUBDIVISIONS: usize = ((X_VIRTUAL_MAX - X_VIRTUAL_MIN) / X_VIRTUAL_INCREMENT) as usize;
+pub const Y_VIRTUAL_SUBDIVISIONS: usize = ((Y_VIRTUAL_MAX - Y_VIRTUAL_MIN) / Y_VIRTUAL_INCREMENT) as usize;
+
+/// Width and height of the PineTime Display
+pub const PHYSICAL_WIDTH: f64 = (X_PHYSICAL_MAX - X_PHYSICAL_MIN) * 1.05;
+pub const PHYSICAL_HEIGHT: f64 = (Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) * 1.05;
+
+/// Width and height of the CHIP-8 Emulator Display
+pub const VIRTUAL_WIDTH: f64 = X_VIRTUAL_MAX - X_VIRTUAL_MIN;
+pub const VIRTUAL_HEIGHT: f64 = Y_VIRTUAL_MAX - Y_VIRTUAL_MIN;
+
+/// Scale the Physical points when interpolating
+pub const X_PHYSICAL_SCALE: f64 = 1.0 * PHYSICAL_WIDTH / (X_PHYSICAL_SUBDIVISIONS as f64);
+pub const Y_PHYSICAL_SCALE: f64 = 1.0 * PHYSICAL_HEIGHT / (Y_PHYSICAL_SUBDIVISIONS as f64);
+
+/// Scale the Virtual points when computing bounding box
+pub const X_VIRTUAL_SCALE: f64 = 1.0 * VIRTUAL_WIDTH / (X_VIRTUAL_SUBDIVISIONS as f64);
+pub const Y_VIRTUAL_SCALE: f64 = 1.0 * VIRTUAL_HEIGHT / (Y_VIRTUAL_SUBDIVISIONS as f64);
+
+/// Shift the Physical points when interpolating
+pub const PHYSICAL_OFFSET: Vector2<f64> = Vector2 {
     x: X_PHYSICAL_MIN,  //  Previously GRID_SIZE
     y: Y_PHYSICAL_MIN,  //  Previously GRID_SIZE
 };
+
+/// Shift the Virtual points when computing bounding box
+pub const VIRTUAL_OFFSET: Vector2<f64> = Vector2 {
+    x: X_VIRTUAL_MIN,
+    y: Y_VIRTUAL_MIN,
+};
+
+pub const OFFSET: f64 = 0.0;  //  Previously -0.01
 
 //  Previously:
 //  pub const SAMPLE_REGION: f64 = 3.5;
