@@ -31,8 +31,8 @@ opt-level     = 'z'         # Optimize for size
 # Optional features
 [features]
 default =  [           # Select the conditional compiled features
-    "interpolate_x",   # Uncomment to interpolate X values
-    # "interpolate_y", # Uncomment to interpolate Y values
+    "interpolate_x",  # Uncomment to interpolate X values
+    #"interpolate_y", # Uncomment to interpolate Y values
 ]
 interpolate_x  = []     # Define the features
 interpolate_y  = []

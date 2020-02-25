@@ -160,11 +160,11 @@ impl<I: InterpolationMethod> Grid<I> {
                 let value = I::interpolate(delaunay, pos);
                 values[y][x] = value.floor();
 
-                #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
-                println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
+                //#[cfg(feature = "interpolate_x")]  //  If interpolating X values...
+                //println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
 
-                #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
-                println!("XPhysical={:.0}, YPhysical={:.0}, YVirtual={:.0}", pos.x, pos.y, value);
+                //#[cfg(feature = "interpolate_y")]  //  If interpolating X values...
+                //println!("XPhysical={:.0}, YPhysical={:.0}, YVirtual={:.0}", pos.x, pos.y, value);
             }
         }
 
