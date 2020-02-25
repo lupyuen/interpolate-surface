@@ -6,12 +6,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! Interpolate CHIP-8's Emulator Screen (square) to PineTime Display (spherical).
+//! Since the X and Y axes are symmetric, we only compute one quadrant here (X >= 0, Y >= 0)
 /*
- * This example showcases spade's interpolation features.
  * Press h for help.
  * See ./interpolation.rs for interpolation related code and
- * ./delaunay_creation.rs for code related to the generation
- * of the randomized triangulation.
+ * ./delaunay_creation.rs for loading the data points.
  *
  * *Note*: This demo uses kiss3d which uses an old version of
  * nalgebra. This nalgebra version is incompatible with spade, that's
@@ -46,6 +46,7 @@ use kiss3d::window::Window;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::constants::*;
 use crate::delaunay_creation::Delaunay;
 use crate::interpolation::interpolation_methods::{
     BarycentricInterpolation, FarinC1Interpolation, NaturalNeighborInterpolation,
@@ -231,6 +232,84 @@ fn main() {
             }
         }
     }
+}
+
+fn generate_virtual_to_physical_map() {
+    let x_virtual_grid: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1] = &[[0.0; 31]; 26];
+    let y_virtual_grid: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1] = &[[0.0; 31]; 26];
+
+    //  For all Virtual (x,y) Coordinates, compute the Bounding Box: min and max of Physical x or y Coordinates
+    for y in 0..=Y_VIRTUAL_SUBDIVISIONS {
+        for x in 0..=X_VIRTUAL_SUBDIVISIONS {
+            //  Convert the normalised (x,y) into Virtual (x,y) Coordinates
+            let pos = transform_virtual_point(cg::Point2::new(x as f64, y as f64));
+            //  For all Physical (x,y) that interpolate to the Virtual (x,y), find the bounding box
+            let bounding_box = get_bounding_box(
+                x_virtual_grid,
+                y_virtual_grid,
+                pos.x,
+                pos.y);  //  Returns (left, top, right, bottom) for the Bounding Box
+            println!("XVirtual={:.0}, YVirtual={:.0}, BoundBox={:.?}", pos.x, pos.y, bounding_box);
+        }
+    }
+}
+
+/// Given a grid of Physical (x,y) Coordinates and their interpolated Virtual (x,y) Coordinates, 
+/// find all Physical (x,y) Coordinates that interpolate to (x_virtual,y_virtual).
+/// Return the (left, top, right, bottom) of the Bounding Box that encloses these found points.
+/// x_virtual and y_virtual are truncated to integer during comparison.
+/// Function returns `None` if (x_virtual,y_virtual) was not found.
+fn get_bounding_box(
+    x_virtual_grid: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1],
+    y_virtual_grid: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1],
+    x_virtual: f64,
+    y_virtual: f64
+) -> Option<(f64, f64, f64, f64)> {
+    let mut left: f64 = f64::MAX;
+    let mut top: f64 = f64::MAX;
+    let mut right: f64 = f64::MIN;
+    let mut bottom: f64 = f64::MIN;
+    //  For all Physical (x,y) Coordinates...
+    for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
+        for x in 0..=X_PHYSICAL_SUBDIVISIONS {
+            //  Get the Physical (x,y) Coordinates
+            let pos = transform_physical_point(cg::Point2::new(x as f64, y as f64));
+
+            //  Get the interpolated Virtual (x,y) Coordinates
+            let x_interpolated = x_virtual_grid[y][x].floor();
+            let y_interpolated = y_virtual_grid[y][x].floor();
+
+            //  Skip if not matching
+            if x_interpolated != x_virtual || y_interpolated != y_virtual { continue; }
+
+            //  Find the Bounding Box of the Physical (x,y) Coordinates
+            if pos.x < left   { left   = pos.x; }
+            if pos.y < top    { top    = pos.y; }
+            if pos.x > right  { right  = pos.x; }
+            if pos.y > bottom { bottom = pos.y; }
+        }
+    };
+    if left < f64::MAX && top < f64::MAX &&
+        right > f64::MIN && bottom > f64::MIN {  //  (x_virtual,y_virtual) found
+            Some((left.floor(), top.floor(), right.floor(), bottom.floor())) 
+    } else { None }  //  (x_virtual,y_virtual) not found
+}
+    
+/// Given a normalised point, return the Physical (x,y) Coordinates
+fn transform_physical_point(v: cg::Point2<f64>) -> cg::Point2<f64> {
+    cg::Point2::new(
+        v.x * X_PHYSICAL_SCALE - PHYSICAL_OFFSET.x,
+        v.y * Y_PHYSICAL_SCALE - PHYSICAL_OFFSET.y
+    )
+    //  Previously: cg::Point2::from_vec((v * SCALE).to_vec() - GRID_OFFSET)
+}
+
+/// Given a normalised point, return the Virtual (x,y) Coordinates
+fn transform_virtual_point(v: cg::Point2<f64>) -> cg::Point2<f64> {
+    cg::Point2::new(
+        v.x * X_VIRTUAL_SCALE - VIRTUAL_OFFSET.x,
+        v.y * Y_VIRTUAL_SCALE - VIRTUAL_OFFSET.y
+    )
 }
 
 fn get_normals(delaunay: &Delaunay) -> Vec<(na::Point3<f32>, na::Point3<f32>)> {

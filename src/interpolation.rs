@@ -107,11 +107,11 @@ impl<I: InterpolationMethod> Grid<I> {
         for y in 0..Y_PHYSICAL_SUBDIVISIONS {
             for x in 0..X_PHYSICAL_SUBDIVISIONS {
                 let from_val = self.grid[y][x] + OFFSET;
-                let from_pos = Self::transform_physical_point(cg::Point2::new(x as f64, y as f64));
+                let from_pos = super::transform_physical_point(cg::Point2::new(x as f64, y as f64));
                 let from = PointWithHeight::new(from_pos, from_val);
                 for &(to_x, to_y) in &[(x + 1, y), (x, y + 1)] {
                     let to_val = self.grid[to_y][to_x] + OFFSET;
-                    let to_pos = Self::transform_physical_point(cg::Point2::new(to_x as f64, to_y as f64));
+                    let to_pos = super::transform_physical_point(cg::Point2::new(to_x as f64, to_y as f64));
                     let to = PointWithHeight::new(to_pos, to_val);
                     result.push((
                         cg_vec_to_na(from.position_3d().to_vec().cast().unwrap()),
@@ -132,7 +132,7 @@ impl<I: InterpolationMethod> Grid<I> {
         for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
             for x in 0..=X_PHYSICAL_SUBDIVISIONS {
                 let val = self.grid[y][x] + OFFSET;
-                let pos = Self::transform_physical_point(cg::Point2::new(x as f64, y as f64));
+                let pos = super::transform_physical_point(cg::Point2::new(x as f64, y as f64));
                 vertices.push(na::Point3::new(pos.x as f32, pos.y as f32, val as f32));
             }
         }
@@ -156,73 +156,16 @@ impl<I: InterpolationMethod> Grid<I> {
         let mut values = [[0.0; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1];
         for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
             for x in 0..=X_PHYSICAL_SUBDIVISIONS {
-                let pos = Self::transform_physical_point(cg::Point2::new(x as f64, y as f64));
+                let pos = super::transform_physical_point(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
                 println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
                 values[y][x] = value;
-            }
-        }
-        //  For all Virtual (x,y) Coordinates, compute the Bounding Box: min and max of Physical x or y Coordinates
-        for y in 0..=Y_VIRTUAL_SUBDIVISIONS {
-            for x in 0..=X_VIRTUAL_SUBDIVISIONS {
-                let pos = Self::transform_virtual_point(cg::Point2::new(x as f64, y as f64));
-                let physical_range = Self::get_physical_range(&values, Some(10.0), None);  //  Returns (min,max) for the range
-                println!("XVirtual={:.0}, YVirtual={:.0}, XPhysicalMin/Max={:.?}", pos.x, pos.y, physical_range);
             }
         }
         Grid {
             grid: values,
             __interpolation: Default::default(),
         }
-    }
-
-    /// Given a normalised point, return the Physical (x,y) Coordinates
-    fn transform_physical_point(v: cg::Point2<f64>) -> cg::Point2<f64> {
-        cg::Point2::new(
-            v.x * X_PHYSICAL_SCALE - PHYSICAL_OFFSET.x,
-            v.y * Y_PHYSICAL_SCALE - PHYSICAL_OFFSET.y
-        )
-        //  Previously: cg::Point2::from_vec((v * SCALE).to_vec() - GRID_OFFSET)
-    }
-
-    /// Given a normalised point, return the Virtual (x,y) Coordinates
-    fn transform_virtual_point(v: cg::Point2<f64>) -> cg::Point2<f64> {
-        cg::Point2::new(
-            v.x * X_VIRTUAL_SCALE - VIRTUAL_OFFSET.x,
-            v.y * Y_VIRTUAL_SCALE - VIRTUAL_OFFSET.y
-        )
-    }
-
-    /// Given a grid of Physical (x,y) Coordinates and their interpolated Virtual x or y Coordinates, 
-    /// return the min and max of Physical x or y Coordinates of a Virtual x or y Coordinate.
-    /// The Virtual x or y Coordinate is truncated to integer for comparison.
-    /// `None` means disregard the Virtual x or y Coordinate. Function returns `None` if Virtual x or y Coordinate was not found.
-    fn get_physical_range(
-        interpolated_values: &[[f64; X_PHYSICAL_SUBDIVISIONS + 1]; Y_PHYSICAL_SUBDIVISIONS + 1],
-        x_virtual: Option<f64>,
-        y_virtual: Option<f64>
-    ) -> Option<(f64, f64)> {
-        let mut min: f64 = f64::MAX;
-        let mut max: f64 = f64::MIN;
-        //  Search for the Virtual x or y Coordinate
-        for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
-            for x in 0..=X_PHYSICAL_SUBDIVISIONS {
-                let pos = Self::transform_physical_point(cg::Point2::new(x as f64, y as f64));
-                let value = interpolated_values[y][x].floor();
-
-                //  Find all Physical (x,y) Coordinates that match
-                if x_virtual == Some(value) {
-                    if pos.x < min { min = pos.x; }
-                    if pos.x > max { max = pos.x; }
-                } else if y_virtual == Some(value) {
-                    if pos.y < min { min = pos.y; }
-                    if pos.y > max { max = pos.y; }
-                } 
-                //  Find the min and max of the Physical (x,y) Coordinates
-            }
-        };
-        if min < f64::MAX && max >= f64::MIN { Some((min, max)) }  //  Virtual x or y Coordinate found
-        else { None }  //  Virtual x or y Coordinate was not found
     }
 
 }
