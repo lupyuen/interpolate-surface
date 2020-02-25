@@ -168,11 +168,22 @@ impl<I: InterpolationMethod> Grid<I> {
             }
         }
 
+        //  Dump out the grid
         #[cfg(feature = "interpolate_x")]  //  If interpolating X values...
-        println!("X_VIRTUAL_GRID=\n{:?}", values);
+        println!("X_VIRTUAL_GRID=\n");
         
         #[cfg(feature = "interpolate_y")]  //  If interpolating Y values...
-        println!("Y_VIRTUAL_GRID=\n{:?}", values);
+        println!("Y_VIRTUAL_GRID=\n");
+
+        print!("[ ");
+        for row in values.iter() {
+            print!("[ ");
+            for val in row.iter() {
+                print!("{:.1}, ", val);
+            }
+            print!("]");
+        }
+        println!("]");
 
         Grid {
             grid: values,
