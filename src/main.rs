@@ -160,6 +160,8 @@ fn main() {
 
     let normals = get_normals(&delaunay);
 
+    generate_virtual_to_physical_map();
+
     while window.render() {
         for event in window.events().iter() {
             let mut update_interpolation_mesh = false;
@@ -286,7 +288,8 @@ fn get_bounding_box(
             let y_interpolated = y_virtual_grid[y][x].floor();
 
             //  Skip if not matching
-            if x_interpolated != x_virtual || y_interpolated != y_virtual { continue; }
+            if x_interpolated as u8 != x_virtual as u8 || 
+                y_interpolated as u8 != y_virtual as u8 { continue; }
 
             //  Find the Bounding Box of the Physical (x,y) Coordinates
             if pos.x < left   { left   = pos.x; }
