@@ -19,6 +19,7 @@
  * and nalgebra points for the rendering in kiss3d. Once kiss3d updates,
  * only nalgebra will be used.
  */
+#![feature(assoc_int_consts)]  //  Allow f64::MIN and MAX
 #![warn(clippy::all)]
 extern crate cgmath;
 extern crate kiss3d;

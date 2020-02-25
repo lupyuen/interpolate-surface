@@ -162,7 +162,9 @@ impl<I: InterpolationMethod> Grid<I> {
                 values[y][x] = value;
             }
         }
+        //  For all Virtual (x,y) Coordinates, find the min and max of Physical x or y Coordinates
         let physical_range = Self::get_physical_range(&values, Some(10.0), None);  //  Returns (min,max) for the range
+        println!("range:{:?}", physical_range);
         Grid {
             grid: values,
             __interpolation: Default::default(),
@@ -186,8 +188,8 @@ impl<I: InterpolationMethod> Grid<I> {
         x_virtual: Option<f64>,
         y_virtual: Option<f64>
     ) -> Option<(f64, f64)> {
-        let mut min: f64 = -1.0;
-        let mut max: f64 = -1.0;
+        let mut min: f64 = f64::MAX;
+        let mut max: f64 = f64::MIN;
         //  Search for the Virtual x or y Coordinate
         for y in 0..=Y_GRID_SUBDIVISIONS {
             for x in 0..=X_GRID_SUBDIVISIONS {
@@ -205,7 +207,7 @@ impl<I: InterpolationMethod> Grid<I> {
                 //  Find the min and max of the Physical (x,y) Coordinates
             }
         };
-        if min >= 0.0 && max >= 0.0 { Some((min, max)) }  //  Virtual x or y Coordinate found
+        if min < f64::MAX && max >= f64::MIN { Some((min, max)) }  //  Virtual x or y Coordinate found
         else { None }  //  Virtual x or y Coordinate was not found
     }
 
