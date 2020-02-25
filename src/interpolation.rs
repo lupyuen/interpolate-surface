@@ -159,9 +159,10 @@ impl<I: InterpolationMethod> Grid<I> {
                 let pos = super::transform_physical_point(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
                 println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
-                values[y][x] = value;
+                values[y][x] = value.floor();
             }
         }
+        println!("grid=\n{:?}", values);
         Grid {
             grid: values,
             __interpolation: Default::default(),
