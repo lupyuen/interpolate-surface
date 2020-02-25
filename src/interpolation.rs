@@ -96,7 +96,7 @@ pub mod interpolation_methods {
  * convert these into an edge list or a vertices / indices list
  */
 pub struct Grid<I: InterpolationMethod> {
-    grid: [[f64; GRID_SUBDIVISIONS + 1]; GRID_SUBDIVISIONS + 1],
+    grid: [[f64; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1],
     __interpolation: ::std::marker::PhantomData<I>,
 }
 
@@ -104,13 +104,13 @@ impl<I: InterpolationMethod> Grid<I> {
     // Returns a list of edges for rendering
     pub fn get_edges(&self) -> Vec<(na::Point3<f32>, na::Point3<f32>)> {
         let mut result = Vec::new();
-        for x in 0..GRID_SUBDIVISIONS {
-            for y in 0..GRID_SUBDIVISIONS {
-                let from_val = self.grid[x][y] + OFFSET;
+        for y in 0..Y_GRID_SUBDIVISIONS {
+            for x in 0..X_GRID_SUBDIVISIONS {
+                let from_val = self.grid[y][x] + OFFSET;
                 let from_pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let from = PointWithHeight::new(from_pos, from_val);
                 for &(to_x, to_y) in &[(x + 1, y), (x, y + 1)] {
-                    let to_val = self.grid[to_x][to_y] + OFFSET;
+                    let to_val = self.grid[to_y][to_x] + OFFSET;
                     let to_pos = Self::transform(cg::Point2::new(to_x as f64, to_y as f64));
                     let to = PointWithHeight::new(to_pos, to_val);
                     result.push((
@@ -129,16 +129,16 @@ impl<I: InterpolationMethod> Grid<I> {
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
 
-        for x in 0..=GRID_SUBDIVISIONS {
-            for y in 0..=GRID_SUBDIVISIONS {
-                let val = self.grid[x][y] + OFFSET;
+        for y in 0..=Y_GRID_SUBDIVISIONS {
+            for x in 0..=X_GRID_SUBDIVISIONS {
+                let val = self.grid[y][x] + OFFSET;
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 vertices.push(na::Point3::new(pos.x as f32, pos.y as f32, val as f32));
             }
         }
-        for x in 0..GRID_SUBDIVISIONS {
-            for y in 0..GRID_SUBDIVISIONS {
-                let index = |x, y| x * (GRID_SUBDIVISIONS + 1) + y;
+        for y in 0..Y_GRID_SUBDIVISIONS {
+            for x in 0..X_GRID_SUBDIVISIONS {
+                let index = |x, y| y * (X_GRID_SUBDIVISIONS + 1) + x;
                 let v00 = index(x, y) as u16;
                 let v10 = index(x + 1, y) as u16;
                 let v01 = index(x, y + 1) as u16;
@@ -153,13 +153,13 @@ impl<I: InterpolationMethod> Grid<I> {
     // This will do the actual interpolation and store it in the triangulation
     #[allow(clippy::needless_range_loop)]
     pub fn from_delaunay_interpolation(delaunay: &Delaunay) -> Grid<I> {
-        let mut values = [[0.0; GRID_SUBDIVISIONS + 1]; GRID_SUBDIVISIONS + 1];
-        for x in 0..=GRID_SUBDIVISIONS {
-            for y in 0..=GRID_SUBDIVISIONS {
+        let mut values = [[0.0; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1];
+        for y in 0..=Y_GRID_SUBDIVISIONS {
+            for x in 0..=X_GRID_SUBDIVISIONS {
                 let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
                 let value = I::interpolate(delaunay, pos);
-                println!("XPhysical={:.0},YPhysical={:.0},XVirtual={:.0}", pos.x, pos.y, value);
-                values[x][y] = value;
+                println!("XPhysical={:.0}, YPhysical={:.0}, XVirtual={:.0}", pos.x, pos.y, value);
+                values[y][x] = value;
             }
         }
         Grid {
@@ -169,10 +169,10 @@ impl<I: InterpolationMethod> Grid<I> {
     }
 
     fn transform(v: cg::Point2<f64>) -> cg::Point2<f64> {
-        //cg::Point2::from_vec((v * SCALE).to_vec() - GRID_OFFSET)
         cg::Point2::new(
             v.x * X_SCALE - GRID_OFFSET.x,
             v.y * Y_SCALE - GRID_OFFSET.y
-        ) ////
+        )
+        //  Previously: cg::Point2::from_vec((v * SCALE).to_vec() - GRID_OFFSET)
     }
 }
