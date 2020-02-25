@@ -269,6 +269,7 @@ fn generate_virtual_to_physical_map() {
     println!("VIRTUAL_TO_PHYSICAL_MAP=");
     print!("[");
     for y in 0..Y_VIRTUAL_SUBDIVISIONS {
+        print!("[");
         for x in 0..X_VIRTUAL_SUBDIVISIONS {
             //  Convert the normalised (x,y) into Virtual (x,y) Coordinates
             let pos = transform_virtual_point(cg::Point2::new(x as f64, y as f64));
@@ -284,7 +285,7 @@ fn generate_virtual_to_physical_map() {
                     print!("****");  //  Flag out Virtual Points that map to a single Physical Point
                 } */
             } else {
-                print!("[255,255,255,255],");
+                print!("(255,255,255,255),");
             }
             //  println!("XVirtual={:.0}, YVirtual={:.0}, BoundBox={:.?}", pos.x, pos.y, bounding_box);
         }
