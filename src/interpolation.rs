@@ -162,6 +162,7 @@ impl<I: InterpolationMethod> Grid<I> {
                 values[y][x] = value;
             }
         }
+        let physical_range = Self::get_physical_range(&values, Some(10.0), None);  //  Returns (min,max) for the range
         Grid {
             grid: values,
             __interpolation: Default::default(),
@@ -175,4 +176,37 @@ impl<I: InterpolationMethod> Grid<I> {
         )
         //  Previously: cg::Point2::from_vec((v * SCALE).to_vec() - GRID_OFFSET)
     }
+
+    /// Given a grid of Physical (x,y) Coordinates and their interpolated Virtual x or y Coordinates, 
+    /// return the min and max of Physical x or y Coordinates of a Virtual x or y Coordinate.
+    /// The Virtual x or y Coordinate is truncated to integer for comparison.
+    /// `None` means disregard the Virtual x or y Coordinate. Function returns `None` if Virtual x or y Coordinate was not found.
+    fn get_physical_range(
+        interpolated_values: &[[f64; X_GRID_SUBDIVISIONS + 1]; Y_GRID_SUBDIVISIONS + 1],
+        x_virtual: Option<f64>,
+        y_virtual: Option<f64>
+    ) -> Option<(f64, f64)> {
+        let mut min: f64 = -1.0;
+        let mut max: f64 = -1.0;
+        //  Search for the Virtual x or y Coordinate
+        for y in 0..=Y_GRID_SUBDIVISIONS {
+            for x in 0..=X_GRID_SUBDIVISIONS {
+                let pos = Self::transform(cg::Point2::new(x as f64, y as f64));
+                let value = interpolated_values[y][x].floor();
+
+                //  Find all Physical (x,y) Coordinates that match
+                if x_virtual == Some(value) {
+                    if pos.x < min { min = pos.x; }
+                    if pos.x > max { max = pos.x; }
+                } else if y_virtual == Some(value) {
+                    if pos.y < min { min = pos.y; }
+                    if pos.y > max { max = pos.y; }
+                } 
+                //  Find the min and max of the Physical (x,y) Coordinates
+            }
+        };
+        if min >= 0.0 && max >= 0.0 { Some((min, max)) }  //  Virtual x or y Coordinate found
+        else { None }  //  Virtual x or y Coordinate was not found
+    }
+
 }
