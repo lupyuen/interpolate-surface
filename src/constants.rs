@@ -22,14 +22,14 @@ pub const Y_PHYSICAL_INCREMENT: f64 = 4.0; // 1.0;  //  i.e. 0, 1, 2, ...
 pub const X_GRID_SUBDIVISIONS: usize = ((X_PHYSICAL_MAX - X_PHYSICAL_MIN) / X_PHYSICAL_INCREMENT) as usize;
 pub const Y_GRID_SUBDIVISIONS: usize = ((Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) / Y_PHYSICAL_INCREMENT) as usize;
 
-pub const OFFSET: f64 = 0.0; // -0.01;
+pub const OFFSET: f64 = 0.0;  //  Previously -0.01
 pub const GRID_WIDTH: f64 = (X_PHYSICAL_MAX - X_PHYSICAL_MIN) * 1.05;
 pub const GRID_HEIGHT: f64 = (Y_PHYSICAL_MAX - Y_PHYSICAL_MIN) * 1.05;
 pub const X_SCALE: f64 = 1.0 * GRID_WIDTH / (X_GRID_SUBDIVISIONS as f64);
 pub const Y_SCALE: f64 = 1.0 * GRID_HEIGHT / (Y_GRID_SUBDIVISIONS as f64);
 pub const GRID_OFFSET: Vector2<f64> = Vector2 {
-    x: X_PHYSICAL_MIN, // GRID_SIZE,
-    y: Y_PHYSICAL_MIN, // GRID_SIZE,
+    x: X_PHYSICAL_MIN,  //  Previously GRID_SIZE
+    y: Y_PHYSICAL_MIN,  //  Previously GRID_SIZE
 };
 
 //  Previously:
@@ -39,5 +39,5 @@ pub const GRID_OFFSET: Vector2<f64> = Vector2 {
 //  pub const MAX_HEIGHT: f64 = 1.5;
 //  pub const GRID_SUBDIVISIONS: usize = 20; // 250;
 //  pub const GRID_SIZE: f64 = SAMPLE_REGION * 1.05;
-// pub const SCALE: f64 = 1.0 * GRID_SIZE / (GRID_SUBDIVISIONS as f64);
-// pub const SCALE: f64 = 2.0 * GRID_SIZE / (GRID_SUBDIVISIONS as f64);
+//  pub const SCALE: f64 = 1.0 * GRID_SIZE / (GRID_SUBDIVISIONS as f64);
+//  pub const SCALE: f64 = 2.0 * GRID_SIZE / (GRID_SUBDIVISIONS as f64);
