@@ -244,24 +244,32 @@ fn main() {
 /// For all Physical (x,y) Coordinates, return the corresponding Virtual (x,y) Coordinates.
 /// Used by the CHIP-8 Emulator to decide which Virtual Pixel to fetch the colour value when rendering a Physical Pixel.
 fn generate_physical_to_virtual_map() {
-    for y in 0..=Y_PHYSICAL_SUBDIVISIONS {
-        for x in 0..=X_PHYSICAL_SUBDIVISIONS {
+    println!("PHYSICAL_TO_VIRTUAL_MAP=");
+    print!("[");
+    for y in 0..Y_PHYSICAL_SUBDIVISIONS {
+        print!("[");
+        for x in 0..X_PHYSICAL_SUBDIVISIONS {
             //  Convert the normalised (x,y) into Physical (x,y) Coordinates
-            let physical_point = transform_physical_point(cg::Point2::new(x as f64, y as f64));
+            //  let physical_point = transform_physical_point(cg::Point2::new(x as f64, y as f64));
             //  Construct the interpolated Virtual (x,y) Coordinates
             let virtual_point = cg::Point2::new(
                 data::X_VIRTUAL_GRID[y][x] as f64, 
                 data::Y_VIRTUAL_GRID[y][x] as f64
             );
+            print!("[{:.0},{:.0}],", virtual_point.x, virtual_point.y);
         }
+        println!("],");
     }
+    println!("]\n");    
 }
 
 /// For all Virtual (x,y) Coordinates, compute the Bounding Box that encloses the corresponding Physical (x,y) Coordinates.
 /// Used by the CHIP-8 Emulator to decide which Physical Pixels to redraw when a Virtual Pixel is updated.
 fn generate_virtual_to_physical_map() {
-    for y in 0..=Y_VIRTUAL_SUBDIVISIONS {
-        for x in 0..=X_VIRTUAL_SUBDIVISIONS {
+    println!("VIRTUAL_TO_PHYSICAL_MAP=");
+    print!("[");
+    for y in 0..Y_VIRTUAL_SUBDIVISIONS {
+        for x in 0..X_VIRTUAL_SUBDIVISIONS {
             //  Convert the normalised (x,y) into Virtual (x,y) Coordinates
             let pos = transform_virtual_point(cg::Point2::new(x as f64, y as f64));
             //  For all Physical (x,y) that interpolate to the Virtual (x,y), find the bounding box
@@ -271,13 +279,18 @@ fn generate_virtual_to_physical_map() {
                 pos.x,
                 pos.y);  //  Returns (left, top, right, bottom) for the Bounding Box
             if let Some((left, top, right, bottom)) = bounding_box {
-                if left as u8 == right as u8 && top as u8 == bottom as u8 {
+                print!("[{:.0},{:.0},{:.0},{:.0}],", left, top, right, bottom);
+                /* if left as u8 == right as u8 && top as u8 == bottom as u8 {
                     print!("****");  //  Flag out Virtual Points that map to a single Physical Point
-                }
+                } */
+            } else {
+                print!("[255,255,255,255],");
             }
-            println!("XVirtual={:.0}, YVirtual={:.0}, BoundBox={:.?}", pos.x, pos.y, bounding_box);
+            //  println!("XVirtual={:.0}, YVirtual={:.0}, BoundBox={:.?}", pos.x, pos.y, bounding_box);
         }
+        println!("],");
     }
+    println!("]\n");    
 }
 
 /// Given a grid of Physical (x,y) Coordinates and their interpolated Virtual (x,y) Coordinates, 
